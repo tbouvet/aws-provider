@@ -1,0 +1,7 @@
+{% for group_item in groups %}
+[{{group_item}}]
+{%   for entry in groups[group_item] %}
+{{ entry }} public_ip={{ hostvars[entry].public_ip }}
+{%   endfor %}
+
+{% endfor %}

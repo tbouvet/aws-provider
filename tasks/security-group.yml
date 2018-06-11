@@ -1,0 +1,11 @@
+- name: Create Security groups
+  environment: "{{proxy_env}}"
+  ec2_group:
+    name: "{{client_params.client.name}}_{{ item.name }}_{{client_params.client.uid}}"
+    description: "sg {{item.name}} for {{client_params.client.name}}"
+    vpc_id: "{{ client_params.params.vpc_id }}"
+    rules: "{{item.rules}}"
+  loop: "{{client_params.params.security_groups}}"
+  
+- set_fact:
+    lagoon_ec2_group: "{% for g in client_params.params.security_groups %}{{client_params.client.name}}_{{ g.name }}_{{client_params.client.uid}}{% if not loop.last %},{% endif %}{%endfor%}"

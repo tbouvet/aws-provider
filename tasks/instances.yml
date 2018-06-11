@@ -1,0 +1,19 @@
+- name: Generate template to create instances
+  template:
+    src: templates/create-ec2.yml.j2
+    dest: "create-ec2-{{client_params.client.uid}}.yml"
+
+- name: Provision instances
+  include_tasks: "create-ec2-{{client_params.client.uid}}.yml"
+
+- pause: 
+    seconds: 10
+    prompt: "Waiting for machine to be alive..."
+  when: ec2.changed
+
+- name: Refresh Inventory
+  shell: ${ANSIBLE_INVENTORY} --refresh-cache
+  when: ec2.changed
+  changed_when: no
+
+- meta: refresh_inventory

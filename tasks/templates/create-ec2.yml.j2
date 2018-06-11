@@ -1,0 +1,17 @@
+- name: Create EC2 instances
+  environment: "{{'{{'}}proxy_env{{'}}'}}"
+  ec2:
+    key_name: "{{lagoon_keypair_name}}"
+    instance_type: "{{client_params.params.instance_type}}"
+    image: "{{ client_params.params.ami_id }}"
+    region: "{{ client_params.params.region }}"
+    wait: true
+    exact_count: {{client_params.instances}}
+    count_tag:
+      Name: {{client_params.client.name}}
+    instance_tags:
+      Name: {{client_params.client.name}}
+    {% if client_params.params.security_groups is defined %}group: {{lagoon_ec2_group}}{% endif %}
+    {% if client_params.params.xxx is defined %}test: {{lagoon_ec2_group}}{% endif %}
+
+  register: ec2

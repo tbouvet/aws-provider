@@ -1,0 +1,23 @@
+- set_fact:
+    proxy_env: "{{client_params.proxy_env}}"
+    ssh_dir: ~/.ssh
+- name: Create .ssh
+  file:
+    state: directory
+    name: "{{ ssh_dir }}"
+    mode: 0700
+- name: Push ssh key
+  copy:
+    src: "{{client_params.output_folder}}/{{client_params.client.name}}_key.pem"
+    dest: "{{ ssh_dir }}/aws.key"
+    mode: 0400
+- name: Generate ssh config
+  template:
+    src: "templates/ssh_config"
+    dest: "{{ ssh_dir }}/config"
+    mode: 0400
+- name: Generate auth config
+  template:
+    src: "templates/authent.j2"
+    dest: "{{ ssh_dir }}/myauth"
+    mode: 0400
