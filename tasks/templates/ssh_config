@@ -1,5 +1,0 @@
-Host *.amazonaws.com 
-	User ubuntu
-	IdentityFile ~/.ssh/aws.key
-	StrictHostKeyChecking no
-	ProxyCommand /usr/local/bin/corkscrew {{client_params.proxy_host}} {{client_params.proxy_port}} %h %p ~/.ssh/myauth

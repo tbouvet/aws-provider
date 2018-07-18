@@ -1,17 +1,23 @@
 - name: Create EC2 instances
-  environment: "{{'{{'}}proxy_env{{'}}'}}"
   ec2:
     key_name: "{{lagoon_keypair_name}}"
-    instance_type: "{{client_params.params.instance_type}}"
-    image: "{{ client_params.params.ami_id }}"
-    region: "{{ client_params.params.region }}"
+    instance_type: "{{lagoon_configuration_params.params.instance_type}}"
+    image: "{{ lagoon_configuration_params.params.ami_id }}"
+    region: "{{ lagoon_configuration_params.params.region }}"
     wait: true
-    exact_count: {{client_params.instances}}
+    exact_count: {{lagoon_configuration_params.instances}}
     count_tag:
-      Name: {{client_params.client.name}}
+      Name: {{lagoon_configuration_params.client.name}}
     instance_tags:
-      Name: {{client_params.client.name}}
-    {% if client_params.params.security_groups is defined %}group: {{lagoon_ec2_group}}{% endif %}
-    {% if client_params.params.xxx is defined %}test: {{lagoon_ec2_group}}{% endif %}
-
+      Name: {{lagoon_configuration_params.client.name}}
+{% if lagoon_configuration_params.params.assign_public_ip is defined %}    assign_public_ip : {{lagoon_configuration_params.params.assign_public_ip }}
+{% endif %}
+{% if lagoon_configuration_params.params.placement_group is defined %}    placement_group: {{lagoon_configuration_params.params.placement_group.name}}
+{% endif %}
+{% if lagoon_configuration_params.params.security_groups is defined %}    group: {{lagoon_ec2_group|replace('\n','')}}
+{% endif %}
+{% if lagoon_configuration_params.volumes is defined %}    volumes: 
+{% for v in lagoon_configuration_params.volumes %}
+    - {{v.params | to_nice_yaml | indent(6,false)}}{% endfor %}
+{% endif %}
   register: ec2

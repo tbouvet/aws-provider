@@ -1,0 +1,16 @@
+---
+# tasks file for aws-cli
+- name: Create the AWS config directory
+  file:
+    path: /root/.aws
+    state: directory
+- name: Copy AWS CLI config
+  template:
+    src: config
+    dest: /root/.aws/config
+    mode: 0600
+- name: Copy AWS CLI credentials
+  template:
+    src: credentials
+    dest: /root/.aws/credentials
+    mode: 0600

@@ -1,0 +1,34 @@
+---
+- block:
+  - name: Initialize vars 1/2
+    set_fact:
+      lagoon_volumes: {}
+      lagoon_volumes_tags: {}
+  - name: Initialize vars 2/2
+    set_fact:
+      lagoon_volumes: "{{ lagoon_volumes | combine( {item.params.device_name: item.name} ) }}"
+      lagoon_volumes_tags: "{{ lagoon_volumes_tags | combine( {item.params.device_name: item.params.tags|default({})} ) }}"
+    with_items: "{{lagoon_configuration_params.volumes}}"
+  - name: Get volumes ids
+    ec2_vol:
+      region: "{{item.region}}"
+      instance: "{{ item.id }}"
+      state: list
+    with_items: "{{ ec2.tagged_instances }}"
+    register: ec2_instances_volumes
+    loop_control:
+      label: "{{ item.block_device_mapping }}"
+  - name: Tag volumes
+    vars:
+    - device_name: "{{item.1.attachment_set.device}}"
+    ec2_tag:
+      region: "{{ lagoon_configuration_params.params.region }}"
+      resource: "{{ item.1.id }}"
+      tags: "{{ lagoon_volumes_tags[device_name] | combine({'FSName': lagoon_volumes[device_name]}) }}"
+    with_subelements:
+    - "{{ ec2_instances_volumes.results }}"
+    - volumes
+    when:
+    - lagoon_volumes[device_name] is defined
+    loop_control:
+      label: "{{ item.1.id }} - {{ item.1.attachment_set.device }}"

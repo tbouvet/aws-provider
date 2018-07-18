@@ -1,12 +1,13 @@
+---
 - name: Generate template to create instances
   template:
     src: templates/create-ec2.yml.j2
-    dest: "create-ec2-{{client_params.client.uid}}.yml"
+    dest: "{{lagoon_temp_dir}}/create-ec2-{{lagoon_configuration_params.client.uid}}.yml"
 
 - name: Provision instances
-  include_tasks: "create-ec2-{{client_params.client.uid}}.yml"
+  include_tasks: "{{lagoon_temp_dir}}/create-ec2-{{lagoon_configuration_params.client.uid}}.yml"
 
-- pause: 
+- pause:
     seconds: 10
     prompt: "Waiting for machine to be alive..."
   when: ec2.changed
@@ -14,6 +15,27 @@
 - name: Refresh Inventory
   shell: ${ANSIBLE_INVENTORY} --refresh-cache
   when: ec2.changed
-  changed_when: no
+  changed_when: false
 
 - meta: refresh_inventory
+
+- block:
+  - name: Estimate Swarm managers count
+    set_fact:
+      lagoon_managers: >
+        {% set ns = namespace(managers=1) %}{% for x in range(1,([9,lagoon_configuration_params.instances+1]|min)) %}
+        {%if x % 2 == 1%}{% set ns.managers = x %}{%endif%}{%endfor%}{{ns.managers}}
+
+  - name: Add swarm tag on instance
+    ec2_tag:
+      resource: "{{item.id}}"
+      region: "{{item.region}}"
+      state: present
+      tags:
+        Swarm_type: "{{swarm_type}}"
+    vars:
+      swarm_type: "{% if index_manager < lagoon_managers %}manager{%else%}node{%endif%}"
+    loop: "{{ec2.tagged_instances}}"
+    loop_control:
+      index_var: index_manager
+      label: "{{item.id}} - {{swarm_type}}"
