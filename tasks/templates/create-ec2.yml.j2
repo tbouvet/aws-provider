@@ -10,11 +10,15 @@
       Name: {{lagoon_configuration_params.client.name}}
     instance_tags:
       Name: {{lagoon_configuration_params.client.name}}
+{% if lagoon_configuration_params.params.vpc_subnet_id is defined %}    vpc_subnet_id : {{lagoon_configuration_params.params.vpc_subnet_id }}
+{% endif %}
 {% if lagoon_configuration_params.params.assign_public_ip is defined %}    assign_public_ip : {{lagoon_configuration_params.params.assign_public_ip }}
 {% endif %}
 {% if lagoon_configuration_params.params.placement_group is defined %}    placement_group: {{lagoon_configuration_params.params.placement_group.name}}
 {% endif %}
 {% if lagoon_configuration_params.params.security_groups is defined %}    group: {{lagoon_ec2_group|replace('\n','')}}
+{% endif %}
+{% if lagoon_configuration_params.params.security_groups_ids is defined %}    group_id: {{lagoon_configuration_params.params.security_groups_ids}}
 {% endif %}
 {% if lagoon_configuration_params.volumes is defined %}    volumes: 
 {% for v in lagoon_configuration_params.volumes %}

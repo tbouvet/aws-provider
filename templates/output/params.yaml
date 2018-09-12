@@ -1,6 +1,6 @@
 swarm_label:
   manager: tag_Swarm_type_manager
   node: tag_Swarm_type_node
-hosts_list: tag_Name_{{lagoon_configuration_params.client.name}}
+hosts_list: tag_Name_{{lagoon_configuration_params.client.name | replace('-','_') }} 
 volumes:
   {{lagoon_volumes | to_nice_yaml | indent(2,false)}}

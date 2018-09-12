@@ -7,6 +7,18 @@
 - name: Provision instances
   include_tasks: "{{lagoon_temp_dir}}/create-ec2-{{lagoon_configuration_params.client.uid}}.yml"
 
+- name: Add tags on instance
+  ec2_tag:
+    resource: "{{item.id}}"
+    region: "{{item.region}}"
+    state: present
+    tags: "{{lagoon_configuration_params.params.instance_tags}}"
+  loop: "{{ec2.tagged_instances}}"
+  loop_control:
+    index_var: index_manager
+    label: "{{item.id}}"
+  when: lagoon_configuration_params.params.instance_tags is defined
+
 - pause:
     seconds: 10
     prompt: "Waiting for machine to be alive..."
@@ -39,3 +51,16 @@
     loop_control:
       index_var: index_manager
       label: "{{item.id}} - {{swarm_type}}"
+
+  - name: Check network
+    set_fact:
+      lagoon_public_ip: "{{ lagoon_configuration_params.params.assign_public_ip | default(True) }}"
+  - name: Add ssh configuration
+    include_role:
+      name: lagoon.ssh
+    vars:
+      lagoon_ssh_proxy:
+      lagoon_ssh_key: "{{ lagoon_configuration_params.connectionConfig.machine_private_key }}"
+      lagoon_ssh_host: "{{item.private_ip}}"
+    when: lagoon_public_ip == False
+    loop: "{{ec2.tagged_instances}}"

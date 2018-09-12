@@ -4,5 +4,5 @@
   name: lagoon.configuration
 
 - src: https://github.com/lagoon-platform/ansible-role-ssh-config.git
-  version: alpha1
+  version: alpha2
   name: lagoon.ssh

@@ -21,9 +21,31 @@
       aws_region: "{{ lookup('env', 'AWS_REGION') | default('eu-west-1', true) }}"
       aws_access_key_id: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
       aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+  - name: Check parameters
+    block:
+    - set_fact:
+        required_vars:
+        - input_dir
+        - output_dir
+        - lagoon_configuration_params
+    - name: Check required parameters
+      fail: msg="Parameter '{{item}}' is not defined"
+      when: item not in vars
+      with_items: "{{required_vars}}"
+    - name: Check required parameters in Params
+      fail: msg="Parameter '{{item}}' is not defined in [ConnectionConfig] tag."
+      when: item not in lagoon_configuration_params.connectionConfig
+      with_items:
+      - provider
+      - machine_private_key
+      - machine_public_key
+  - name: Check network
+    set_fact:
+      lagoon_public_ip: "{{ lagoon_configuration_params.params.assign_public_ip | default(True) }}"
   - name: Set Provider
     set_fact:
       lagoon_provider: "{{lagoon_configuration_params.connectionConfig.provider}}"
+      lagoon_private: "{% if lagoon_public_ip == False %}-private{% endif %}"
   - name: Return params for AWS
     template:
       src: templates/output/env.yml
