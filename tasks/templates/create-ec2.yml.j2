@@ -3,7 +3,7 @@
     key_name: "{{lagoon_keypair_name}}"
     instance_type: "{{lagoon_configuration_params.params.instance_type}}"
     image: "{{ lagoon_configuration_params.params.ami_id }}"
-    region: "{{ lagoon_configuration_params.params.region }}"
+    region: "{{ lagoon_aws_region }}"
     wait: true
     exact_count: {{lagoon_configuration_params.instances}}
     count_tag:

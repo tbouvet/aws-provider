@@ -1,5 +1,5 @@
 - name: Create EC2 placement group {{item.name}}
   ec2_placement_group:
-    region: "{{ lagoon_configuration_params.params.region }}"
+    region: "{{ lagoon_aws_region }}"
     state: present
 {{item | to_nice_yaml | indent(4,true)}}

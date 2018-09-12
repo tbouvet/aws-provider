@@ -39,7 +39,7 @@
     vars:
     - device_name: "{{item.1.attachment_set.device}}"
     ec2_tag:
-      region: "{{ lagoon_configuration_params.params.region }}"
+      region: "{{ lagoon_aws_region }}"
       resource: "{{ item.1.id }}"
       tags: "{{ lagoon_volumes_tags[device_name] | combine({'FSName': lagoon_volumes[lagoon_volumes_devices[device_name]]}) }}"
     with_subelements:
