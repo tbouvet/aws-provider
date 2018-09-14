@@ -7,9 +7,9 @@
     wait: true
     exact_count: {{lagoon_configuration_params.instances}}
     count_tag:
-      Name: {{lagoon_configuration_params.client.name}}
+      Name: {{lagoon_configuration_params.environment.name}}
     instance_tags:
-      Name: {{lagoon_configuration_params.client.name}}
+      Name: {{lagoon_configuration_params.environment.name}}
 {% if lagoon_configuration_params.params.vpc_subnet_id is defined %}    vpc_subnet_id : {{lagoon_configuration_params.params.vpc_subnet_id }}
 {% endif %}
 {% if lagoon_configuration_params.params.assign_public_ip is defined %}    assign_public_ip : {{lagoon_configuration_params.params.assign_public_ip }}

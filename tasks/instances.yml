@@ -2,10 +2,10 @@
 - name: Generate template to create instances
   template:
     src: templates/create-ec2.yml.j2
-    dest: "{{lagoon_temp_dir}}/create-ec2-{{lagoon_configuration_params.client.uid}}.yml"
+    dest: "{{lagoon_temp_dir}}/create-ec2-{{lagoon_configuration_params.environment.uid}}.yml"
 
 - name: Provision instances
-  include_tasks: "{{lagoon_temp_dir}}/create-ec2-{{lagoon_configuration_params.client.uid}}.yml"
+  include_tasks: "{{lagoon_temp_dir}}/create-ec2-{{lagoon_configuration_params.environment.uid}}.yml"
 
 - name: Add tags on instance
   ec2_tag:
@@ -44,7 +44,7 @@
       region: "{{item.region}}"
       state: present
       tags:
-        Swarm_type: "{{swarm_type}}"
+        Swarm_type: "{{lagoon_configuration_params.environment.name}}_{{swarm_type}}"
     vars:
       swarm_type: "{% if index_manager < lagoon_managers %}manager{%else%}node{%endif%}"
     loop: "{{ec2.tagged_instances}}"

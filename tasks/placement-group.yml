@@ -2,13 +2,13 @@
 - name: Generate template to create placement group
   template:
     src: templates/create-placement.yml.j2
-    dest: "{{lagoon_temp_dir}}/create-placement-{{lagoon_configuration_params.client.uid}}.yml"
+    dest: "{{lagoon_temp_dir}}/create-placement-{{lagoon_configuration_params.environment.uid}}.yml"
   with_items:
   - "{{lagoon_configuration_params.params.placement_group}}"
   loop_control:
     label: "{{ item.name }}"
 
 - name: Create placement group
-  include_tasks: "{{lagoon_temp_dir}}/create-placement-{{lagoon_configuration_params.client.uid}}.yml"
+  include_tasks: "{{lagoon_temp_dir}}/create-placement-{{lagoon_configuration_params.environment.uid}}.yml"
   with_items:
   - "{{lagoon_configuration_params.params.placement_group}}"
