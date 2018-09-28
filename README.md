@@ -1,27 +1,28 @@
 # aws-provider
 
-To create a new __AWS EC2 stack__, run the playbook `provisioning-stack.yml`
+To create a new __AWS EC2 stack__, run the playbook `create.yml`
 		
-This playbook needs one parameter:
+This playbook needs 2 parameters:
 
-- **config_dir**: folder which contains yaml files with EC2 parameters
+- **input_dir**: folder which contains yaml files with EC2 parameters
+- **output_dir**: folder which contains yaml files with EC2 parameters
 
-This provider has a dependency with the *core* module to install all *docker components*.
 
 > If **proxy** is needed to connect to AWS, export **proxy** parameters in environment variables (http\_proxy, https\_proxy, no\_proxy).
 
-> To use EC2 dynamic inventory, set environment variables: ANSIBLE\_INVENTORY and EC2\_INI\_PATH (python module is in *scripts* folder).
+> To use EC2 dynamic inventory, set environment variables: EC2\_INI\_PATH (python module is in *inventory/modules* folder).
 
 
 __Example__:
 
 ```
-ansible-playbook provisioning-stack.yml -e "config_dir=/opt/inputs"
+ansible-playbook create.yml -e "input_dir=/opt/input output_dir=/opt/output" -i inventory/modules
 ```
 
 __EC2 configuration file example__:
 
 ```yaml
+instances: 3
 params:
   instance_type: "t2.micro"
   ami_id: "ami-f90a4880"
@@ -42,11 +43,6 @@ params:
       - 80
       cidr_ip: 0.0.0.0/0
       rule_desc: allow all on port 80
-    - proto: tcp
-      ports:
-      - 8080
-      cidr_ip: 0.0.0.0/0
-      rule_desc: allow all on port 8080
   - name: swarm
     rules:
     - proto: tcp
@@ -69,5 +65,51 @@ params:
       - 4789 
       cidr_ip: 0.0.0.0/0
       rule_desc: overlay network traffic
-
+volumes:
+- name: /data
+  device_name: nvme1n1
+  params:
+    device_name: xvdf
+    volume_type: gp2
+    volume_size: 10
+    delete_on_termination: true
 ```
+
+## EC2 Parameters for Instances
+
+All variables which can be overridden as in table below (under **params** tag).
+
+| Name           | Required | Default Value | Description                        |
+| -------------- | -------- | ------------- | -----------------------------------|
+| `instance_type` |  True |   | Instance type to use for the instance, see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html |
+| `ami_id` |  True |  | AMI ID to use for the instance |
+| `vpc_id` |   |  | VPC ID to use for the security groups |
+| `vpc_subnet_id` |   |  | vpc_subnet ID to use for the instance |
+| `assign_public_ip` |   | True | when provisioning within vpc, assign a public IP address. Boto library must be 2.13.0+ |
+| `security_groups` |  |  | To define new security groups, see EC2 parameters for Security Groups |
+| `security_groups_ids` |  |  | List of existing security groups ids |
+| `instance_tags` |  |  | List of tags to add for the instance |
+
+
+## EC2 parameters for Security Groups 
+
+| Name           | Required | Default Value | Description                        |
+| -------------- | -------- | ------------- | -----------------------------------|
+| `name` |  True |   | Security group's name |
+| `rules` |  True |  | See https://docs.ansible.com/ansible/latest/modules/ec2_group_module.html |
+
+
+## EC2 parameters for Volumes 
+
+| Name           | Required | Default Value | Description                        |
+| -------------- | -------- | ------------- | -----------------------------------|
+| `name` |  True |   | Mount point's name |
+| `device_name` |  | `params.device_name` | Machine's device name to mount |
+| `params` |  True |  | See https://docs.ansible.com/ansible/latest/modules/ec2_vol_module.html |
+
+## EC2 parameters for Placement Group 
+
+| Name           | Required | Default Value | Description                        |
+| -------------- | -------- | ------------- | -----------------------------------|
+| `name` |  True |   | Placement Group's name |
+| `strategy` |  |  | See https://docs.ansible.com/ansible/latest/modules/ec2_placement_group_module.html |

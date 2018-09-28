@@ -45,11 +45,14 @@
   - name: Set Provider
     set_fact:
       lagoon_provider: "{{lagoon_configuration_params.connectionConfig.provider}}"
-      lagoon_private: "{% if lagoon_public_ip == False %}-private{% endif %}"
+      lagoon_network: "{% if lagoon_public_ip == False %}-private{% else %}-public{% endif %}"
   - name: Return params for AWS
     template:
-      src: templates/output/env.yml
-      dest: "{{output_dir}}/env.yaml"
+      src: "templates/output/{{item}}"
+      dest: "{{output_dir}}/{{item}}"
+    with_items:
+    - env.yaml
+    - inventory.yaml
   - name: Add ssh configuration
     include_role:
       name: lagoon.ssh

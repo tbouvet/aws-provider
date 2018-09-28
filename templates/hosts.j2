@@ -1,0 +1,15 @@
+# Declaring Swarm groups
+[managers]
+[workers]
+
+[managers:children]
+tag_Swarm_type_{{lagoon_configuration_params.environment.name | replace('-','_')}}_manager
+
+[workers:children]
+{% if lagoon_workers.instances | length > 0 %}
+tag_Swarm_type_{{lagoon_configuration_params.environment.name | replace('-','_')}}_worker
+{% endif %}
+
+[nodes:children]
+managers
+workers

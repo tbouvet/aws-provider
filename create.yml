@@ -50,3 +50,6 @@
       file:
         path: "{{lagoon_temp_dir}}"
         state: absent
+
+- name: Create Inventory
+  import_playbook: inventory.yml
