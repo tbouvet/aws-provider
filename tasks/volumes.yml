@@ -16,12 +16,11 @@
 
   - name: Initialize vars 1/2
     set_fact:
-      lagoon_volumes: {}
       lagoon_volumes_tags: {}
       lagoon_volumes_devices: {}
   - name: Initialize vars 2/2
     set_fact:
-      lagoon_volumes: "{{ lagoon_volumes | combine( {item.device_name: item.name} ) }}"
+      lagoon_volumes: "{{ (lagoon_volumes|default({})) | combine({item.params.device_name: item.name}) }}"
       lagoon_volumes_tags: "{{ lagoon_volumes_tags | combine( {item.params.device_name: item.params.tags|default({})} ) }}"
       lagoon_volumes_devices: "{{ lagoon_volumes_devices | combine( {item.params.device_name: item.device_name} ) }}"
     with_items: "{{lagoon_configuration_params.volumes}}"
@@ -41,7 +40,7 @@
     ec2_tag:
       region: "{{ lagoon_aws_region }}"
       resource: "{{ item.1.id }}"
-      tags: "{{ lagoon_volumes_tags[device_name] | combine({'FSName': lagoon_volumes[lagoon_volumes_devices[device_name]]}) }}"
+      tags: "{{ lagoon_volumes_tags[device_name] | combine({'FSName': lagoon_volumes[device_name]}) }}"
     with_subelements:
     - "{{ ec2_instances_volumes.results }}"
     - volumes

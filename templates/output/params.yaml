@@ -1,2 +1,9 @@
+---
 volumes:
-  {{lagoon_volumes | to_nice_yaml | indent(2,false)}}
+#{% for v in ec2.tagged_instances %} Volume for machine {{v.id}}
+- name: "{% if v.dns_name != '' %}{{v.dns_name}}{% else %}{{v.private_ip}}{% endif %}"
+  devices: 
+#{% for d in v.block_device_mapping %} {% if lagoon_volumes[d] is defined %}Volume {{loop.index}}
+  - device: "{{ lagoon_volumes_devices[d] }}"
+    volume: "{{ lagoon_volumes[d] }}"
+#{% endif %}{% endfor %}{% endfor %}

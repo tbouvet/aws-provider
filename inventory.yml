@@ -7,9 +7,9 @@
     include_role:
       name: lagoon.configuration
   tasks:
-  - name: Refresh Inventory
-    shell: "{{lagoon_configuration_params.component_path.aws}}/inventory/modules/ec2.py --refresh-cache"
-    changed_when: false
+#  - name: Refresh Inventory
+#    shell: "{{lagoon_configuration_params.component_path.aws}}/inventory/modules/ec2.py --refresh-cache"
+#    changed_when: false
   - meta: refresh_inventory
 
   - name: Create inventory folder

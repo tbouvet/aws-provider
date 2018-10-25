@@ -1,4 +1,4 @@
 ---
 inventory_path: >
-  -i {{lagoon_configuration_params.component_path.aws}}/inventory/modules
+  -i {{lagoon_configuration_params.component_path.aws}}/inventory
   -i {{lagoon_inventory_path}}
