@@ -2,22 +2,22 @@
 - name: Generate template to create instances
   template:
     src: templates/create-ec2.yml.j2
-    dest: "{{lagoon_temp_dir}}/create-ec2-{{lagoon_configuration_params.environment.uid}}.yml"
+    dest: "{{ekara_temp_dir}}/create-ec2-{{ekara_configuration_params.environment.uid}}.yml"
 
 - name: Provision instances
-  include_tasks: "{{lagoon_temp_dir}}/create-ec2-{{lagoon_configuration_params.environment.uid}}.yml"
+  include_tasks: "{{ekara_temp_dir}}/create-ec2-{{ekara_configuration_params.environment.uid}}.yml"
 
 - name: Add tags on instance
   ec2_tag:
     resource: "{{item.id}}"
     region: "{{item.region}}"
     state: present
-    tags: "{{lagoon_configuration_params.params.instance_tags}}"
+    tags: "{{ekara_configuration_params.params.instance_tags}}"
   loop: "{{ec2.tagged_instances}}"
   loop_control:
     index_var: index_manager
     label: "{{item.id}}"
-  when: lagoon_configuration_params.params.instance_tags is defined
+  when: ekara_configuration_params.params.instance_tags is defined
 
 - pause:
     seconds: 10
@@ -27,8 +27,8 @@
 - block:
   - name: Estimate Swarm managers count
     set_fact:
-      lagoon_managers: >
-        {% set ns = namespace(managers=1) %}{% for x in range(1,([9,lagoon_configuration_params.instances+1]|min)) %}
+      ekara_managers: >
+        {% set ns = namespace(managers=1) %}{% for x in range(1,([9,ekara_configuration_params.instances+1]|min)) %}
         {%if x % 2 == 1%}{% set ns.managers = x %}{%endif%}{%endfor%}{{ns.managers}}
 
   - name: Add swarm tag on instance
@@ -37,9 +37,9 @@
       region: "{{item.region}}"
       state: present
       tags:
-        Swarm_type: "{{lagoon_configuration_params.environment.name}}_{{swarm_type}}"
+        Swarm_type: "{{ekara_configuration_params.environment.name}}_{{swarm_type}}"
     vars:
-      swarm_type: "{% if index_manager < lagoon_managers %}manager{%else%}worker{%endif%}"
+      swarm_type: "{% if index_manager < ekara_managers %}manager{%else%}worker{%endif%}"
     loop: "{{ec2.tagged_instances}}"
     loop_control:
       index_var: index_manager

@@ -5,39 +5,39 @@
   pre_tasks:
   - name: Load configuration
     include_role:
-      name: lagoon.configuration
+      name: ekara.configuration
   tasks:
   - set_fact:
-      lagoon_keypair_name: "{{lagoon_configuration_params.environment.name}}_{{lagoon_configuration_params.environment.uid}}"
-      lagoon_temp_dir: "tmp-{{lookup('pipe','date') | to_uuid}}"
-      lagoon_aws_region: "{{ lookup('env', 'AWS_REGION') }}"
+      ekara_keypair_name: "{{ekara_configuration_params.environment.name}}_{{ekara_configuration_params.environment.uid}}"
+      ekara_temp_dir: "tmp-{{lookup('pipe','date') | to_uuid}}"
+      ekara_aws_region: "{{ lookup('env', 'AWS_REGION') }}"
 
   - name: Create temp dir
     file:
-      path: "{{lagoon_temp_dir}}"
+      path: "{{ekara_temp_dir}}"
       state: directory
   - name: Create Infrastructure
     block:
     - name: Create a new ec2 key pair
       ec2_key:
-        name: "{{lagoon_keypair_name}}"
+        name: "{{ekara_keypair_name}}"
         force: false
-        key_material: "{{ lookup('file', lagoon_configuration_params.connectionConfig.machine_public_key) }}"
+        key_material: "{{ lookup('file', ekara_configuration_params.connectionConfig.machine_public_key) }}"
 
     - name: Provision a set of security groups
       include_tasks: tasks/security-group.yml
-      when: lagoon_configuration_params.params.security_groups is defined
+      when: ekara_configuration_params.params.security_groups is defined
 
     - name: Provision a placement group
       include_tasks: tasks/placement-group.yml
-      when: lagoon_configuration_params.params.placement_group is defined
+      when: ekara_configuration_params.params.placement_group is defined
 
     - name: Provision a set of instances
       include_tasks: tasks/instances.yml
 
     - name: Provision volumes
       include_tasks: tasks/volumes.yml
-      when: lagoon_configuration_params.volumes is defined
+      when: ekara_configuration_params.volumes is defined
 
     - name: Push outputs to engine
       template:
@@ -48,7 +48,7 @@
     always:
     - name: Purge temp dir
       file:
-        path: "{{lagoon_temp_dir}}"
+        path: "{{ekara_temp_dir}}"
         state: absent
 
 - name: Create Inventory

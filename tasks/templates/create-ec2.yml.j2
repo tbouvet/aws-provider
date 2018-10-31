@@ -1,27 +1,29 @@
 - name: Create EC2 instances
   ec2:
-    key_name: "{{lagoon_keypair_name}}"
-    instance_type: "{{lagoon_configuration_params.params.instance_type}}"
-    image: "{{ lagoon_configuration_params.params.ami_id }}"
-    region: "{{ lagoon_aws_region }}"
+    key_name: "{{ekara_keypair_name}}"
+    instance_type: "{{ekara_configuration_params.params.instance_type}}"
+    image: "{{ ekara_configuration_params.params.ami_id }}"
+    region: "{{ ekara_aws_region }}"
     wait: true
-    exact_count: {{lagoon_configuration_params.instances}}
+    exact_count: {{ekara_configuration_params.instances}}
     count_tag:
-      Name: {{lagoon_configuration_params.environment.name}}
+      Name: {{ekara_configuration_params.environment.name}}
     instance_tags:
-      Name: {{lagoon_configuration_params.environment.name}}
-{% if lagoon_configuration_params.params.vpc_subnet_id is defined %}    vpc_subnet_id : {{lagoon_configuration_params.params.vpc_subnet_id }}
+      Name: {{ekara_configuration_params.environment.name}}
+      Stack_id: {{ekara_configuration_params.environment.uid}}
+      Stack_name: {{ekara_configuration_params.environment.name}}
+{% if ekara_configuration_params.params.vpc_subnet_id is defined %}    vpc_subnet_id : {{ekara_configuration_params.params.vpc_subnet_id }}
 {% endif %}
-{% if lagoon_configuration_params.params.assign_public_ip is defined %}    assign_public_ip : {{lagoon_configuration_params.params.assign_public_ip }}
+{% if ekara_configuration_params.params.assign_public_ip is defined %}    assign_public_ip : {{ekara_configuration_params.params.assign_public_ip }}
 {% endif %}
-{% if lagoon_configuration_params.params.placement_group is defined %}    placement_group: {{lagoon_configuration_params.params.placement_group.name}}
+{% if ekara_configuration_params.params.placement_group is defined %}    placement_group: {{ekara_configuration_params.params.placement_group.name}}
 {% endif %}
-{% if lagoon_configuration_params.params.security_groups is defined %}    group: {{lagoon_ec2_group|replace('\n','')}}
+{% if ekara_configuration_params.params.security_groups is defined %}    group: {{ekara_ec2_group|replace('\n','')}}
 {% endif %}
-{% if lagoon_configuration_params.params.security_groups_ids is defined %}    group_id: {{lagoon_configuration_params.params.security_groups_ids}}
+{% if ekara_configuration_params.params.security_groups_ids is defined %}    group_id: {{ekara_configuration_params.params.security_groups_ids}}
 {% endif %}
-{% if lagoon_configuration_params.volumes is defined %}    volumes: 
-{% for v in lagoon_configuration_params.volumes %}
+{% if ekara_configuration_params.volumes is defined %}    volumes: 
+{% for v in ekara_configuration_params.volumes %}
     - {{v.params | to_nice_yaml | indent(6,false)}}{% endfor %}
 {% endif %}
   register: ec2

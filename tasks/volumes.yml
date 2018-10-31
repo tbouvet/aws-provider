@@ -1,29 +1,29 @@
 ---
 - block:
   - set_fact:
-      lagoon_volumes_tmp: []
+      ekara_volumes_tmp: []
   - set_fact:
-      lagoon_volumes_tmp: "{{ lagoon_volumes_tmp + [item | combine({'device_name': item.params.device_name})] }}"
-    with_items: "{{lagoon_configuration_params.volumes}}"
+      ekara_volumes_tmp: "{{ ekara_volumes_tmp + [item | combine({'device_name': item.params.device_name})] }}"
+    with_items: "{{ekara_configuration_params.volumes}}"
     when: item.device_name is not defined
   - set_fact:
-      lagoon_volumes_tmp: "{{ lagoon_volumes_tmp + [item] }}"
-    with_items: "{{lagoon_configuration_params.volumes}}"
+      ekara_volumes_tmp: "{{ ekara_volumes_tmp + [item] }}"
+    with_items: "{{ekara_configuration_params.volumes}}"
     when: item.device_name is defined
   - name: Fix default device name
     set_fact:
-      lagoon_configuration_params: "{{lagoon_configuration_params | combine({'volumes': lagoon_volumes_tmp})}}"
+      ekara_configuration_params: "{{ekara_configuration_params | combine({'volumes': ekara_volumes_tmp})}}"
 
   - name: Initialize vars 1/2
     set_fact:
-      lagoon_volumes_tags: {}
-      lagoon_volumes_devices: {}
+      ekara_volumes_tags: {}
+      ekara_volumes_devices: {}
   - name: Initialize vars 2/2
     set_fact:
-      lagoon_volumes: "{{ (lagoon_volumes|default({})) | combine({item.params.device_name: item.name}) }}"
-      lagoon_volumes_tags: "{{ lagoon_volumes_tags | combine( {item.params.device_name: item.params.tags|default({})} ) }}"
-      lagoon_volumes_devices: "{{ lagoon_volumes_devices | combine( {item.params.device_name: item.device_name} ) }}"
-    with_items: "{{lagoon_configuration_params.volumes}}"
+      ekara_volumes: "{{ (ekara_volumes|default({})) | combine({item.params.device_name: item.name}) }}"
+      ekara_volumes_tags: "{{ ekara_volumes_tags | combine( {item.params.device_name: item.params.tags|default({})} ) }}"
+      ekara_volumes_devices: "{{ ekara_volumes_devices | combine( {item.params.device_name: item.device_name} ) }}"
+    with_items: "{{ekara_configuration_params.volumes}}"
 
   - name: Get volumes ids
     ec2_vol:
@@ -38,13 +38,13 @@
     vars:
     - device_name: "{{item.1.attachment_set.device}}"
     ec2_tag:
-      region: "{{ lagoon_aws_region }}"
+      region: "{{ ekara_aws_region }}"
       resource: "{{ item.1.id }}"
-      tags: "{{ lagoon_volumes_tags[device_name] | combine({'FSName': lagoon_volumes[device_name]}) }}"
+      tags: "{{ ekara_volumes_tags[device_name] | combine({'FSName': ekara_volumes[device_name]}) }}"
     with_subelements:
     - "{{ ec2_instances_volumes.results }}"
     - volumes
     when:
-    - lagoon_volumes_tags[device_name] is defined
+    - ekara_volumes_tags[device_name] is defined
     loop_control:
       label: "{{ item.1.id }} - {{ item.1.attachment_set.device }}"
