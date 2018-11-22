@@ -6,6 +6,11 @@
   - name: Load configuration
     include_role:
       name: ekara.configuration
+  - set_fact:
+      ekara_plf: "{{ekara_configuration_params.environment.name}}_{{ekara_configuration_params.environment.qualifier}}"
+    when:
+    - ekara_plf is not defined
+
   tasks:
   - meta: refresh_inventory
 
@@ -16,18 +21,23 @@
   - name: Gather instances
     ec2_instance_facts:
       filters:
-        "tag:Name": "{{ ekara_configuration_params.environment.name }}"
+        "tag:ek.stack_name": "{{ ekara_configuration_params.environment.name }}"
+        "tag:ek.stack_qualifier": "{{ ekara_configuration_params.environment.qualifier }}"
     register: ekara_instances
   - name: Gather Worker hosts
     ec2_instance_facts:
       filters:
-        "tag:Swarm_type": "{{ ekara_configuration_params.environment.name }}_worker"
+        "tag:ek.swarm_type": "{{ ekara_plf }}_worker"
         instance-state-name: running
     register: ekara_workers
   - name: Update local inventory
     template:
       src: templates/hosts.j2
       dest: "{{ekara_inventory_path}}/hosts"
+  - name: Update nodeset inventory
+    template:
+      src: templates/hosts-nodeset.j2
+      dest: "{{ekara_inventory_path}}/hosts-{{ekara_configuration_params.environment.nodeset}}"
 
   - name: Check IP configuration
     set_fact:

@@ -2,13 +2,13 @@
 - name: Generate template to create placement group
   template:
     src: templates/create-placement.yml.j2
-    dest: "{{ekara_temp_dir}}/create-placement-{{ekara_configuration_params.environment.uid}}.yml"
+    dest: "{{ekara_temp_dir}}/create-placement-{{ekara_configuration_params.environment.id}}.yml"
   with_items:
   - "{{ekara_configuration_params.params.placement_group}}"
   loop_control:
     label: "{{ item.name }}"
 
 - name: Create placement group
-  include_tasks: "{{ekara_temp_dir}}/create-placement-{{ekara_configuration_params.environment.uid}}.yml"
+  include_tasks: "{{ekara_temp_dir}}/create-placement-{{ekara_configuration_params.environment.id}}.yml"
   with_items:
   - "{{ekara_configuration_params.params.placement_group}}"

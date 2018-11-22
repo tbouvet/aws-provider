@@ -8,9 +8,10 @@
       name: ekara.configuration
   tasks:
   - set_fact:
-      ekara_keypair_name: "{{ekara_configuration_params.environment.name}}_{{ekara_configuration_params.environment.uid}}"
+      ekara_keypair_name: "{{ekara_configuration_params.environment.name}}_{{ekara_configuration_params.environment.qualifier}}"
       ekara_temp_dir: "tmp-{{lookup('pipe','date') | to_uuid}}"
       ekara_aws_region: "{{ lookup('env', 'AWS_REGION') }}"
+      ekara_plf: "{{ekara_configuration_params.environment.name}}_{{ekara_configuration_params.environment.qualifier}}"
 
   - name: Create temp dir
     file:

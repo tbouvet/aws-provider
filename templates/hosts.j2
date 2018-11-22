@@ -3,11 +3,11 @@
 [workers]
 
 [managers:children]
-tag_Swarm_type_{{ekara_configuration_params.environment.name | replace('-','_')}}_manager
+tag_ek_swarm_type_{{ekara_plf | replace('-','_')}}_manager
 
 [workers:children]
 {% if ekara_workers.instances | length > 0 %}
-tag_Swarm_type_{{ekara_configuration_params.environment.name | replace('-','_')}}_worker
+tag_ek_swarm_type_{{ekara_plf | replace('-','_')}}_worker
 {% endif %}
 
 [nodes:children]

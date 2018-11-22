@@ -2,10 +2,10 @@
 - name: Generate template to create instances
   template:
     src: templates/create-ec2.yml.j2
-    dest: "{{ekara_temp_dir}}/create-ec2-{{ekara_configuration_params.environment.uid}}.yml"
+    dest: "{{ekara_temp_dir}}/create-ec2-{{ekara_configuration_params.environment.id}}.yml"
 
 - name: Provision instances
-  include_tasks: "{{ekara_temp_dir}}/create-ec2-{{ekara_configuration_params.environment.uid}}.yml"
+  include_tasks: "{{ekara_temp_dir}}/create-ec2-{{ekara_configuration_params.environment.id}}.yml"
 
 - name: Add tags on instance
   ec2_tag:
@@ -24,23 +24,5 @@
     prompt: "Waiting for machine to be alive..."
   when: ec2.changed
 
-- block:
-  - name: Estimate Swarm managers count
-    set_fact:
-      ekara_managers: >
-        {% set ns = namespace(managers=1) %}{% for x in range(1,([9,ekara_configuration_params.instances+1]|min)) %}
-        {%if x % 2 == 1%}{% set ns.managers = x %}{%endif%}{%endfor%}{{ns.managers}}
-
-  - name: Add swarm tag on instance
-    ec2_tag:
-      resource: "{{item.id}}"
-      region: "{{item.region}}"
-      state: present
-      tags:
-        Swarm_type: "{{ekara_configuration_params.environment.name}}_{{swarm_type}}"
-    vars:
-      swarm_type: "{% if index_manager < ekara_managers %}manager{%else%}worker{%endif%}"
-    loop: "{{ec2.tagged_instances}}"
-    loop_control:
-      index_var: index_manager
-      label: "{{item.id}} - {{swarm_type}}"
+- name: Add Swarms tags
+  include_tasks: "tag-swarm.yml"

@@ -1,8 +1,8 @@
 ---
 - name: Create Security groups
   ec2_group:
-    name: "{{ekara_configuration_params.environment.name}}_{{ item.name }}_{{ekara_configuration_params.environment.uid}}"
-    description: "sg {{item.name}} for {{ekara_configuration_params.environment.name}}"
+    name: "{{ekara_configuration_params.environment.id}}_{{ item.name }}"
+    description: "sg {{item.name}} for {{ekara_configuration_params.environment.id}}"
     vpc_id: "{{ ekara_configuration_params.params.vpc_id }}"
     rules: "{{item.rules}}"
   loop: "{{ekara_configuration_params.params.security_groups}}"
@@ -10,5 +10,5 @@
 - set_fact:
     ekara_ec2_group: |
       {% for g in ekara_configuration_params.params.security_groups %}
-      {{ekara_configuration_params.environment.name}}_{{ g.name }}_{{ekara_configuration_params.environment.uid}}
+      {{ekara_configuration_params.environment.id}}_{{ g.name }}
       {% if not loop.last %},{% endif %}{%endfor%}
