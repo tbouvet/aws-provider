@@ -20,7 +20,7 @@
       ekara_volumes_devices: {}
   - name: Initialize vars 2/2
     set_fact:
-      ekara_volumes: "{{ (ekara_volumes|default({})) | combine({item.params.device_name: item.name}) }}"
+      ekara_volumes: "{{ (ekara_volumes|default({})) | combine({item.params.device_name: item.path}) }}"
       ekara_volumes_tags: "{{ ekara_volumes_tags | combine( {item.params.device_name: item.params.tags|default({})} ) }}"
       ekara_volumes_devices: "{{ ekara_volumes_devices | combine( {item.params.device_name: item.device_name} ) }}"
     with_items: "{{ekara_configuration_params.volumes}}"
