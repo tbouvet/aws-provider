@@ -6,4 +6,5 @@ volumes:
 #{% for d in v.block_device_mapping %} {% if ekara_volumes[d] is defined %}Volume {{loop.index}}
   - device: "{{ ekara_volumes_devices[d] }}"
     volume: "{{ ekara_volumes[d] }}"
+    volume_id: "{{v.block_device_mapping[d].volume_id}}"
 #{% endif %}{% endfor %}{% endfor %}
