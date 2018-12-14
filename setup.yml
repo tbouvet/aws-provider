@@ -70,4 +70,3 @@
       - boto3==1.9.64
       - boto==2.49.0
       state: present
-
