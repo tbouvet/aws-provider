@@ -102,7 +102,7 @@ All variables which can be overridden as in table below (under **params** tag).
 
 | Name           | Required | Default Value | Description                        |
 | -------------- | -------- | ------------- | -----------------------------------|
-| `name` |  True |   | Mount point's name |
+| `path` |  True |   | Mount point's name |
 | `params` |  True |  | See https://docs.ansible.com/ansible/latest/modules/ec2_vol_module.html |
 
 ## EC2 parameters for Placement Group 
