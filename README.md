@@ -71,7 +71,7 @@ volumes:
     volume_size: 10
     delete_on_termination: true
 labels:
-	label1: value1
+  label1: value1
 ```
 
 ## EC2 Parameters for Instances
