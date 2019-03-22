@@ -67,6 +67,6 @@
     pip:
       name:
       - awscli==1.16.74
-      - boto3==1.9.64
-      - boto==2.49.0
+      #- boto3==1.9.64
+      #- boto==2.49.0
       state: present
