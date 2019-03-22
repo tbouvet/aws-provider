@@ -1,0 +1,38 @@
+providers:
+  aws:
+    env:
+      AWS_REGION: {{ .aws_region }}
+      AWS_ACCESS_KEY_ID: {{ .aws_access_key_id }}
+      AWS_SECRET_ACCESS_KEY: {{ .aws_access_key }}
+      
+    params:
+      security_groups:
+      - name: group1
+        rules:
+        - proto: tcp
+          ports:
+          - 22
+          cidr_ip: 0.0.0.0/0
+          rule_desc: allow all on port 22
+      - name: swarm
+        rules:
+        - proto: tcp
+          ports:
+          - 2377
+          cidr_ip: 0.0.0.0/0
+          rule_desc: cluster management communications
+        - proto: tcp
+          ports:
+          - 7946 
+          cidr_ip: 0.0.0.0/0
+          rule_desc: communication among nodes
+        - proto: udp
+          ports:
+          - 7946 
+          cidr_ip: 0.0.0.0/0
+          rule_desc: communication among nodes
+        - proto: udp
+          ports:
+          - 4789 
+          cidr_ip: 0.0.0.0/0
+          rule_desc: overlay network traffic 
