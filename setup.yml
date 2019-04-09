@@ -61,7 +61,6 @@
       ekara_ssh_key: "{{ ekara_configuration_params.connectionConfig.machine_private_key }}"
       ekara_ssh_host: '*.amazonaws.com'
     when: lookup('env', 'http_proxy') != ""
-
   - name: Add AWS modules
     become: true
     pip:

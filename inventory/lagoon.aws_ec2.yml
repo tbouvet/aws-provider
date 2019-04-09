@@ -4,6 +4,7 @@ regions:
 - eu-west-1
 - eu-west-2
 - eu-central-1
+- eu-north-1 
 hostnames:
 - dns-name
 - private-ip-address
